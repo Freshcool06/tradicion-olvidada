@@ -1,0 +1,300 @@
+/* =================================
+   RESET & CONFIGURACIÓN BASE
+================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    background: #000;
+    font-family: Arial, sans-serif;
+}
+
+/* =================================
+   ESCENA PRINCIPAL & FONDOS CLAROS
+================================= */
+.scene {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    overflow: hidden;
+    
+    /* Fondo por defecto */
+    background: url("Calle sola.jpg") no-repeat center center;
+    background-size: cover;
+}
+
+/* Configuración de fondo propia para la calle */
+.scene.calle-scene {
+    background: url("Calle sola.jpg") no-repeat center center;
+    background-size: cover;
+    filter: brightness(1.2); /* Resalta tus trazos a lápiz originales */
+}
+
+/* Capa del pasado: Calle Antigua */
+.background-past {
+    position: absolute;
+    inset: 0;
+    background: url("fantasmas.jpg") no-repeat center center;
+    background-size: cover;
+    opacity: 0;
+    z-index: 5;
+    
+    transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Revelado automático de fantasmas en hover */
+.scene:has(.hotspot:hover) .background-past {
+    opacity: 1;
+}
+
+/* Capa de oscurecimiento ambiental sutil */
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, transparent 50%, rgba(0,0,0,0.25) 100%);
+    z-index: 6; 
+    pointer-events: none;
+}
+
+/* =================================
+   TEXTOS NARRATIVOS INTERFAZ
+================================= */
+.content {
+    position: relative;
+    z-index: 20;
+    text-align: center;
+    max-width: 700px;
+    margin-top: 50px;
+    padding: 20px;
+    pointer-events: none;
+}
+
+.content h1 {
+    font-family: "Jim Nightshade", cursive;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    color: #fff;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 1), 0 3px 8px #000;
+}
+
+.narrative {
+    font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+    color: #e2d6c1;
+    line-height: 1.6;
+    margin-top: 10px;
+    font-style: italic;
+    text-shadow: 0 2px 6px rgba(0,0,0,1);
+}
+
+/* =================================
+   ZONAS INTERACTIVAS & COORDENADAS
+================================= */
+.interactive-container {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+}
+
+.hotspot {
+    position: absolute;
+    display: block;
+    cursor: pointer;
+}
+
+/* --- Coordenadas: Calle Antigua --- */
+.hotspot-mesa { top: 48%; left: 3%; width: 25%; height: 35%; }
+.hotspot-juguetes { top: 55%; left: 36%; width: 28%; height: 35%; }
+.hotspot-fogon { top: 46%; left: 74%; width: 22%; height: 44%; }
+
+/* ==========================================================================
+   NUEVA ZONA DE TRANSICIÓN ESPECTRAL (FONDO DEL CALLEJÓN)
+   ========================================================================== */
+.portal-salida-calle {
+    position: absolute;
+    top: 36%;            /* Ubicado en la perspectiva del punto de fuga central */
+    left: 50%;           /* Centrado horizontalmente al fondo de la calle */
+    width: 10%;          /* Dimensiones contenidas por la distancia */
+    height: 32%;
+    display: block;
+    cursor: pointer;
+    text-decoration: none;
+    z-index: 12;
+}
+
+/* Al posicionar el mouse sobre el fondo oscuro del callejón, 
+   se integra tu animación de pulso y un sutil efecto de desenfoque brumoso */
+.portal-salida-calle:hover .glow-object {
+    opacity: 1;
+    filter: blur(5px) drop-shadow(0 0 35px rgba(162, 199, 214, 0.6));
+    animation: pulseGlow 1.5s infinite alternate ease-in-out;
+}
+
+.portal-salida-calle:hover {
+    filter: blur(2px);
+    transition: filter 0.4s ease;
+}
+
+/* =================================
+   EFECTO DE BRILLO EN HOVER POTENCIADO
+================================= */
+.glow-object {
+    position: absolute;
+    inset: -20px; 
+    border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(255, 215, 115, 0.4) 0%, rgba(240, 201, 135, 0.1) 50%, transparent 75%);
+    opacity: 0;
+    filter: blur(8px);
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.hotspot:hover .glow-object {
+    opacity: 1;
+    filter: blur(6px) drop-shadow(0 0 25px rgba(255, 200, 100, 0.8));
+    animation: pulseGlow 1.5s infinite alternate ease-in-out;
+}
+
+/* =================================
+   EL PAPEL VIEJO GENERADO POR CSS
+================================= */
+.note-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.397);
+    backdrop-filter: blur(15px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.note-modal.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.note-paper {
+    max-width: 540px;
+    width: 90%;
+    min-height: 420px;
+    padding: 50px 40px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    
+    background-color: #f2e6d0;
+    background-image: 
+        radial-gradient(rgba(139, 115, 85, 0.15) 1px, transparent 0),
+        linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+    background-size: 8px 8px, 100% 100%;
+    
+    /* Bordes rústicos simulados */
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    border: 3px solid #4a3e2e;
+    
+    box-shadow: 
+        0 20px 50px rgba(0,0,0,0.9), 
+        inset 0 0 40px rgba(92, 73, 49, 0.4),
+        inset 0 0 100px rgba(0, 0, 0, 0.15);
+        
+    transform: translateY(40px) scale(0.9);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.note-modal.show .note-paper {
+    transform: translateY(0) scale(1);
+}
+
+#note-content-text {
+    font-family: "Jim Nightshade", cursive;
+    font-size: clamp(1.4rem, 2.3vw, 1.9rem);
+    color: #1f1a12;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.close-note-btn {
+    background: rgba(0, 0, 0, 0.85);
+    color: #e6dac6;
+    border: 1px solid #423828;
+    padding: 12px 28px;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+}
+
+.close-note-btn:hover {
+    background: #1f1a12;
+    color: #fff;
+    transform: scale(1.03);
+}
+
+/* =================================
+   UI BOTÓN DE RETORNO Y TRANSICIÓN
+================================= */
+.back-btn {
+    position: fixed;
+    top: 25px;
+    left: 25px;
+    z-index: 50;
+    color: #a39989;
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    padding: 10px 18px;
+    border: 1px solid rgba(255,255,255,0.03);
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(5px);
+    transition: 0.4s ease;
+}
+
+.back-btn:hover {
+    color: #f3e7d5;
+    border-color: rgba(255,255,255,0.1);
+    transform: translateX(-3px);
+}
+
+.fade-screen {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    opacity: 1;
+    pointer-events: none;
+    z-index: 999;
+    animation: fadeInScene 1.5s ease forwards;
+}
+
+/* =================================
+   ANIMACIONES GLOBALIZADAS
+================================= */
+@keyframes fadeInScene {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes pulseGlow {
+    from { 
+        transform: scale(0.92); 
+        opacity: 0.7; 
+    }
+    to { 
+        transform: scale(1.08); 
+        opacity: 1; 
+        filter: blur(5px) drop-shadow(0 0 35px rgba(255, 215, 115, 0.9));
+    }
+}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gracias por Jugar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jim+Nightshade&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #000;
+            color: #e2d6c1;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .fade-screen {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            animation: fadeIn 2s ease forwards;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .thank-you-container {
+            text-align: center;
+            max-width: 650px;
+            padding: 40px;
+            z-index: 5;
+        }
+        h1 {
+            font-family: "Jim Nightshade", cursive;
+            font-size: clamp(3rem, 6vw, 5rem);
+            color: #fff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(255,255,255,0.1);
+        }
+        p {
+            font-size: clamp(1rem, 1.3vw, 1.25rem);
+            line-height: 1.8;
+            font-style: italic;
+            color: #b0a48f;
+            margin-bottom: 40px;
+        }
+        .credit {
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #615643;
+        }
+        @keyframes fadeIn {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="fade-screen"></div>
+
+    <div class="thank-you-container">
+        <h1>Gracias por jugar</h1>
+        <p>
+            «Las tradiciones no mueren cuando se transforman o cuando el tiempo avanza indomable... Mueren solo cuando dejamos de contarlas, cuando permitimos que el silencio borre la última piedra del camino. Mantener viva la memoria es el acto de rebelión más puro contra el olvido.»
+        </p>
+        <div class="credit">Tradición Olvidada — Una experiencia interactiva</div>
+    </div>
+    <audio id="final-music" autoplay loop>
+        <source src="ambiente.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const finalMusic = document.getElementById('final-music');
+        finalMusic.volume = 0.2; // Volumen suave para la reflexión
+        
+        // Esto ayuda a que el navegador permita la reproducción automática
+        document.addEventListener('click', () => {
+            finalMusic.play();
+        }, { once: true });
+    </script>
+</body>
+</html>

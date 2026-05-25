@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tradición Olvidada - El Desenlace</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jim+Nightshade&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="final.css">
+</head>
+<body>
+
+    <div class="fade-screen"></div>
+
+    <a href="decision-1.html" class="back-btn">← Volver al Cruce</a>
+
+    <audio id="bg-audio" autoplay loop muted src="ambiente.mp3"></audio>
+    <audio id="ui-sound" src="click.mp3"></audio>
+
+    <main class="scene final-scene">
+        <div class="overlay"></div>
+
+        <div class="content">
+            <h1 id="narrative-title">El Reposo del Recuerdo</h1>
+            <p id="narrative-text" class="narrative">
+                Frente a la fría piedra, el tiempo parece detenerse. Examina los elementos abandonados para revelar sus caminos...
+            </p>
+        </div>
+
+        <div class="interactive-container">
+            
+            <a href="#" class="hotspot hotspot-lapida" 
+               data-title="Lápida de Piedra" 
+               data-text="Las inscripciones han sido borradas por los años. Introduce una palabra clave para revelar su trágico destino."
+               data-code1="OLVIDO"
+               data-code2="ECO">
+                <div class="glow-object"></div>
+            </a>
+
+            <a href="#" class="hotspot hotspot-rosa" 
+               data-title="Rosa" 
+               data-text="Un pétalo rojo resiste la helada. Desbloquea un desenlace lleno de esperanza."
+               data-code1="INFANCIA"
+               data-code2="SERENO">
+                <div class="glow-object"></div>
+            </a>
+
+            <a href="#" class="hotspot hotspot-carta" 
+               data-title="?" 
+               data-text="Un sobre cuyas líneas guardan un testimonio. ¿Qué secreto te ha sido legado?"
+               data-code1="IDENTIDAD"
+               data-code2="ALMA">
+                <div class="glow-object"></div>
+            </a>
+
+        </div>
+
+        <div id="note-modal" class="note-modal">
+            <div id="note-paper" class="note-paper">
+                <p id="note-content-text"></p>
+                
+                <div class="modal-buttons-container">
+                    <button id="restart-btn" class="close-note-btn text-btn">Volver al Inicio</button>
+                    <button id="finish-btn" class="close-note-btn text-btn-highlight">Finalizar Aventura</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const titleElement = document.getElementById("narrative-title");
+        const textElement = document.getElementById("narrative-text");
+        const hotspots = document.querySelectorAll(".hotspot");
+        const uiSound = document.getElementById("ui-sound");
+        const bgAudio = document.getElementById("bg-audio");
+
+        const modal = document.getElementById("note-modal");
+        const noteText = document.getElementById("note-content-text");
+        
+        // Nuevos disparadores de los botones
+        const restartBtn = document.getElementById("restart-btn");
+        const finishBtn = document.getElementById("finish-btn");
+
+        const defaultTitle = "El Reposo del Recuerdo";
+        const defaultText = "Frente a la fría piedra, el tiempo parece detenerse. Examina los elementos abandonados para revelar sus caminos...";
+
+        // Base de datos interna con los textos de los 6 finales
+        const textosFinales = {
+            "OLVIDO": "«FINAL DE LA TRAGEDIA: EL OLVIDO»\n\nLa amnesia colectiva ha consumido a Valledupar por completo. Aquellas losas de la plaza y los rincones de la calle ancha que alguna vez vibraron con vida, hoy no son más que un borroso recuerdo sepultado bajo toneladas de cemento y modernidad gris. Nadie queda para contar cómo era el pueblo antes; la tradición ha muerto en silencio.",
+            
+            "ECO": "«FINAL DE LA TRAGEDIA: EL ECO»\n\nLas melodías inspiradas en la estatua y los dulces susurros de la pareja en la penumbra se han desvanecido. Al invocar esta palabra, el viento arrastra un gemido sordo a través del cementerio: el último suspiro de las almas que habitaron Valledupar. Las voces se apagan para siempre, dejando en su lugar un silencio sepulcral absoluto.",
+            
+            "INFANCIA": "«FINAL DE LA ESPERANZA: LA INFANCIA»\n\n¡La memoria se ha salvado en el rincón más puro! Los trompos gastados y las risas que alguna vez poblaron el suelo de tierra vuelven a cobrar vida. Gracias a tu búsqueda, las antiguas costumbres y juegos tradicionales han sido legados con alegría a los niños del presente, asegurando que el alma de Valledupar continúe viva en sus cantos.",
+            
+            "SERENO": "«FINAL DE LA ESPERANZA: EL SERENO»\n\nLa historia de Valledupar abraza el paso del tiempo con una dignidad inquebrantable. Aunque el frío del presente es inevitable, los relatos de los ancestros y el orgullo de sus luchas quedan grabados con fuerza. Las nuevas generaciones se detienen ante los monumentos con respeto, protegiendo las raíces contra el viento del olvido.",
+            
+            "IDENTIDAD": "«MENSAJE AL JUGADOR: LA IDENTIDAD»\n\nViajero, este papel viejo no te habla desde la ficción, sino desde tu propia realidad. Las recetas de manjar blanco, los saberes artesanos y las historias de tus abuelos son tu verdadera armadura en un mundo hiperconectado que tiende a volvernos homogéneos. Al descifrar este sello, la carta te encomienda una misión: vuelve tus ojos a tus raíces y defiende tu propia identidad.",
+            
+            "ALMA": "«MENSAJE AL JUGADOR: EL ALMA»\n\nHas llegado al término del lienzo. Esta provincia de trazos a lápiz y sombras espectrales era solo un cascarón vacío en el código... hasta que decidiste detenerte a mirar. El arte, la historia y la tradición solo adquieren significado cuando un alma humana se toma el tiempo de sentirlos y recordarlos. Gracias por otorgarle un alma a este recuerdo compartido.»"
+        };
+
+        function activarAudioGlobal() {
+            bgAudio.muted = false;
+            bgAudio.volume = 0.15;
+            bgAudio.play().catch(() => {});
+        }
+
+        document.addEventListener("mousemove", activarAudioGlobal);
+        document.addEventListener("touchstart", activarAudioGlobal);
+
+        hotspots.forEach(hotspot => {
+            hotspot.addEventListener("mouseenter", () => {
+                titleElement.textContent = hotspot.getAttribute("data-title");
+                textElement.textContent = hotspot.getAttribute("data-text");
+            });
+
+            hotspot.addEventListener("mouseleave", () => {
+                titleElement.textContent = defaultTitle;
+                textElement.textContent = defaultText;
+            });
+
+            hotspot.addEventListener("click", (e) => {
+                e.preventDefault();
+                activarAudioGlobal();
+
+                uiSound.currentTime = 0;
+                uiSound.volume = 0.4;
+                uiSound.play();
+
+                const c1 = hotspot.getAttribute("data-code1");
+                const c2 = hotspot.getAttribute("data-code2");
+
+                const entrada = prompt("Introduce una palabra clave para abrir este sendero:");
+
+                if (entrada) {
+                    const respuestaUsuario = entrada.trim().toUpperCase();
+
+                    if (respuestaUsuario === c1 || respuestaUsuario === c2) {
+                        noteText.innerHTML = textosFinales[respuestaUsuario].replace(/\n/g, '<br>');
+                        modal.classList.add("show");
+                    } else {
+                        alert("El destino permanece oculto. Esa palabra no pertenece a este recuerdo.");
+                    }
+                }
+            });
+        });
+
+        // Función para hacer un "fade out" suave antes de cambiar de página
+function salirConAudio(urlDestino) {
+    let volumen = bgAudio.volume;
+    // Bajamos el volumen gradualmente en 500ms
+    const fadeInterval = setInterval(() => {
+        if (volumen > 0.05) {
+            volumen -= 0.05;
+            bgAudio.volume = volumen;
+        } else {
+            clearInterval(fadeInterval);
+            window.location.href = urlDestino;
+        }
+    }, 50);
+}
+
+// Acción: Volver al Inicio
+restartBtn.addEventListener("click", () => {
+    uiSound.currentTime = 0;
+    uiSound.play();
+    salirConAudio("index.html"); 
+});
+
+// Acción: Finalizar Aventura
+finishBtn.addEventListener("click", () => {
+    uiSound.currentTime = 0;
+    uiSound.play();
+    salirConAudio("agradecimiento.html");
+});
+    </script>
+</body>
+</html>

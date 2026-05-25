@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tradición olvidada - una experiencia narrativa</title>
+
+    <!-- FUENTE -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jim+Nightshade&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- PANTALLA DE BIENVENIDA (Para activar el audio) -->
+    <div class="welcome-screen" id="welcome-layer">
+        <div class="welcome-content">
+            <p>Se recomienda el uso de audífonos.</p>
+            <button class="btn-enter">Entrar a la experiencia</button>
+        </div>
+    </div>
+
+    <!-- TRANSICION DE SALIDA (A la siguiente página) -->
+    <div class="fade-screen"></div>
+
+    <!-- AUDIO AMBIENTE -->
+    <audio autoplay loop muted id="bg-audio">
+        <source src="ambiente.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- SONIDO BOTONES -->
+    <audio id="ui-sound">
+        <source src="click.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- HERO (Menú Principal) -->
+    <main class="hero">
+        <h1>Tradición Olvidada</h1>
+        <p class="lead">Explora los ecos de un pasado que ya no existe, encuentra las palabras que el tiempo ha ocultado, para hacer de lo que será el Valledupar que fué.</p>
+        <a href="decision-1.html" class="btn" id="start-btn">Inicio</a>
+    </main>
+
+    <script>
+        const audio = document.getElementById("bg-audio");
+        const uiSound = document.getElementById("ui-sound");
+        const startBtn = document.getElementById("start-btn");
+        const fade = document.querySelector(".fade-screen");
+        const welcomeLayer = document.getElementById("welcome-layer");
+
+        // 1. Activar música en la primera pantalla al dar clic en "Entrar"
+        welcomeLayer.addEventListener("click", () => {
+            // Desbloqueamos y reproducimos el audio ambiente
+            audio.muted = false;
+            audio.volume = 0.05;
+            audio.play();
+
+            // Sonido de clic al entrar
+            uiSound.currentTime = 0;
+            uiSound.volume = 0.3;
+            uiSound.play();
+
+            // Desvanecemos la capa negra de bienvenida para revelar el menú
+            welcomeLayer.classList.add("fade-out");
+            
+            // La eliminamos del DOM un segundo después para que no estorbe
+            setTimeout(() => {
+                welcomeLayer.style.display = "none";
+            }, 1000);
+        });
+
+        // 2. Lógica del botón de inicio (Transición a la página de decisiones)
+        startBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            uiSound.currentTime = 0;
+            uiSound.volume = 0.5;
+            uiSound.play();
+
+            fade.classList.add("active");
+
+            setTimeout(() => {
+                window.location.href = startBtn.getAttribute("href");
+            }, 1200);
+        });
+    </script>
+</body>
+</html>

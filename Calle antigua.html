@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tradición Olvidada - Calle Antigua</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jim+Nightshade&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="calle antigua.css">
+</head>
+<body>
+
+    <div class="fade-screen"></div>
+
+    <a href="decision-1.html" class="back-btn">← Volver al Cruce</a>
+
+    <audio id="bg-audio" autoplay loop muted src="ambiente.mp3"></audio>
+    <audio id="ui-sound" src="click.mp3"></audio>
+
+    <main class="scene calle-scene">
+        <div class="background-past"></div>
+        <div class="overlay"></div>
+
+        <div class="content">
+            <h1 id="narrative-title">El Callejón del Pasado</h1>
+            <p id="narrative-text" class="narrative">
+                El viento arrastra el eco de viejas melodías entre los muros caídos. Explora los rincones perdidos en el tiempo...
+            </p>
+        </div>
+
+        <div class="interactive-container">
+            
+            <a href="#" class="hotspot hotspot-mesa" 
+               data-title="La Mesa Desierta" 
+               data-text="Una vieja mesa de madera donde antes se compartían juegos y tertulias bajo el sol."
+               data-note="(Carta) «Las reuniones en torno a esta madera fueron el ALMA de la calle ancha, un punto de encuentro que la distancia y el olvido han dejado en un silencio sepulcral.»">
+                <div class="glow-object"></div>
+            </a>
+
+            <a href="#" class="hotspot hotspot-juguetes" 
+               data-title="Recuerdos del Suelo" 
+               data-text="Unos trompos gastados descansan sobre la tierra, esperando las manos que ya no volverán."
+               data-note="(Rosa) «A pesar del polvo acumulado por los años, la memoria de la INFANCIA se niega a detenerse en la vieja provincia, resistiendo al paso implacable del tiempo.»">
+                <div class="glow-object"></div>
+            </a>
+
+            <a href="#" class="hotspot hotspot-fogon" 
+               data-title="El Fogón Apagado" 
+               data-text="Las cenizas frías son el único testigo del calor y las historias familiares que aquí se cocinaban."
+               data-note="(Lápida) «El hollín en las piedras revela la última cena compartida, antes de que la memoria familiar fuera condenada al OLVIDO definitivo de los nuevos tiempos.»">
+                <div class="glow-object"></div>
+            </a>
+
+            <a href="final.html" class="portal-salida-calle" id="btn-salir-calle">
+                <div class="glow-object"></div>
+            </a>
+
+        </div>
+
+        <div id="note-modal" class="note-modal">
+            <div id="note-paper" class="note-paper">
+                <p id="note-content-text"></p>
+                <button id="close-note-btn" class="close-note-btn">Cerrar recuerdo</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const titleElement = document.getElementById("narrative-title");
+        const textElement = document.getElementById("narrative-text");
+        const hotspots = document.querySelectorAll(".hotspot");
+        const uiSound = document.getElementById("ui-sound");
+        const bgAudio = document.getElementById("bg-audio");
+
+        const modal = document.getElementById("note-modal");
+        const noteText = document.getElementById("note-content-text");
+        const closeBtn = document.getElementById("close-note-btn");
+
+        const defaultTitle = "El Callejón del Pasado";
+        const defaultText = "El viento arrastra el eco de viejas melodías entre los muros caídos. Explora los rincones perdidos en el tiempo...";
+
+        function activarAudioGlobal() {
+            bgAudio.muted = false;
+            bgAudio.volume = 0.15;
+
+            bgAudio.play()
+                .then(() => {
+                    console.log("Música del callejón iniciada correctamente.");
+                    remueveDisparadores();
+                })
+                .catch(error => {
+                    console.log("El navegador sigue esperando una interacción para activar el audio.");
+                });
+        }
+
+        document.addEventListener("mousemove", activarAudioGlobal);
+        document.addEventListener("touchstart", activarAudioGlobal);
+        document.addEventListener("click", saferPlayAudio);
+
+        function saferPlayAudio() {
+            activarAudioGlobal();
+        }
+
+        function remueveDisparadores() {
+            document.removeEventListener("mousemove", activarAudioGlobal);
+            document.removeEventListener("touchstart", activarAudioGlobal);
+        }
+
+        // CONTROL DEL PORTAL DE SALIDA (Actualiza la UI como en la plaza pero NO abre modal)
+        const portalSalida = document.getElementById("btn-salir-calle");
+        if(portalSalida) {
+            portalSalida.addEventListener("mouseenter", () => {
+                titleElement.textContent = "El Sendero de las Sombras";
+                textElement.textContent = "La luz de la calle se extingue aquí. Cruza los límites del presente para encarar tu destino definitivo...";
+            });
+            portalSalida.addEventListener("mouseleave", () => {
+                titleElement.textContent = defaultTitle;
+                textElement.textContent = defaultText;
+            });
+            portalSalida.addEventListener("click", () => {
+                uiSound.currentTime = 0;
+                uiSound.play();
+            });
+        }
+
+        hotspots.forEach(hotspot => {
+            hotspot.addEventListener("mouseenter", () => {
+                activarAudioGlobal();
+                titleElement.textContent = hotspot.getAttribute("data-title");
+                textElement.textContent = hotspot.getAttribute("data-text");
+            });
+
+            hotspot.addEventListener("mouseleave", () => {
+                titleElement.textContent = defaultTitle;
+                textElement.textContent = defaultText;
+            });
+
+            hotspot.addEventListener("click", (e) => {
+                e.preventDefault();
+                activarAudioGlobal();
+
+                uiSound.currentTime = 0;
+                uiSound.volume = 0.4;
+                uiSound.play();
+
+                noteText.innerHTML = hotspot.getAttribute("data-note");
+                modal.classList.add("show");
+            });
+        });
+
+        closeBtn.addEventListener("click", () => {
+            uiSound.currentTime = 0;
+            uiSound.play();
+            modal.classList.remove("show");
+        });
+    </script>
+</body>
+</html>
